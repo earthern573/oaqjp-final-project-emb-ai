@@ -16,24 +16,35 @@ def emotion_detector(text_to_analyze) :
         # Extract emotion scores from the response
         emotions = formatted_response.get("emotionPredictions", [{}])[0].get("emotion", {})
         # Safely extract each emotion score
-        anger = emotions.get("anger")
-        disgust = emotions.get("disgust")
-        fear = emotions.get("fear")
-        joy = emotions.get("joy")
-        sadness = emotions.get("sadness")
-        # Determine the dominant emotion
-        emotion_scores = [anger, disgust, fear, joy, sadness]
-        dominant_emotion = max(emotion_scores, key=lambda x: (x is not None, x), default=None)
+        anger_score = emotions.get("anger")
+        disgust_score = emotions.get("disgust")
+        fear_score = emotions.get("fear")
+        joy_score = emotions.get("joy")
+        sadness_score = emotions.get("sadness")
+        # Create a dictionary mapping emotions to their scores
+        emotion_scores = {
+            'anger': anger_score,
+            'disgust': disgust_score,
+            'fear': fear_score,
+            'joy': joy_score,
+            'sadness': sadness_score
+        }
+        # Determine the dominant emotion by finding the key with the highest score
+        dominant_emotion = max(
+            (emotion for emotion in emotion_scores if emotion_scores[emotion] is not None),
+            key=lambda emotion: emotion_scores[emotion],
+            default=None
+        )
     else:
         # Return default values if the response code is not 200
-        anger = disgust = fear = joy = sadness = None
+        anger_score = disgust_score = fear_score = joy_score = sadness_score = None
         dominant_emotion = None
     # Return the result in the required format
     return {
-        'anger': anger,
-        'disgust': disgust,
-        'fear': fear,
-        'joy': joy,
-        'sadness': sadness,
+        'anger': anger_score,
+        'disgust': disgust_score,
+        'fear': fear_score,
+        'joy': joy_score,
+        'sadness': sadness_score,
         'dominant_emotion': dominant_emotion
     }
